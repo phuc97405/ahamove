@@ -92,7 +92,18 @@ class ApiTokenInterceptor extends InterceptorsWrapper {
       // await refreshToken(err, handler);
     }
     if (err.response?.statusCode == 403) {
-      return handler.reject(err);
+      if (err.response?.data.contains("rate limit exceeded")) {
+        print("Rate limit exceeded. Retrying after a delay...");
+        await Future.delayed(const Duration(seconds: 60));
+        try {
+          var response = await Dio().fetch(err.requestOptions);
+          return handler.resolve(response);
+        } catch (retryError) {
+          return handler.reject(retryError as DioException);
+        }
+      } else {
+        return handler.reject(err);
+      }
     }
 
     return handler.next(err);

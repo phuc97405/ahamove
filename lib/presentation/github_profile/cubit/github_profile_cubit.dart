@@ -57,6 +57,7 @@ class GithubCubit extends Cubit<GithubState> {
           error: (type, msg) => emit(
               state.copyWith(status: GithubStatus.error, listError: [msg])));
     } catch (e) {
+      print(e.toString());
       emit(state
           .copyWith(status: GithubStatus.error, listError: [e.toString()]));
     }
