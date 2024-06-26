@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:ahamove/configurations/configurations.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -89,9 +87,14 @@ class ApiTokenInterceptor extends InterceptorsWrapper {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
+    print('onError Interceptor: ${err.message}');
     if (err.response?.statusCode == 401) {
       // await refreshToken(err, handler);
     }
+    if (err.response?.statusCode == 403) {
+      return handler.reject(err);
+    }
+
     return handler.next(err);
   }
 

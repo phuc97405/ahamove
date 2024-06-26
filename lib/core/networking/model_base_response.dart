@@ -7,7 +7,6 @@ const int parseError = -1;
 const int timeOut = -2;
 const int unknownError = 400;
 const int tokenExpired = 401;
-const int socialNotExist = 402;
 
 @JsonSerializable(explicitToJson: true, genericArgumentFactories: true)
 class ModelBaseResponse<T> {
