@@ -8,14 +8,15 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:dio/dio.dart' as _i3;
+import 'package:dio/dio.dart' as _i5;
 import 'package:get_it/get_it.dart' as _i1;
 import 'package:injectable/injectable.dart' as _i2;
 
-import '../../domain/repositories/github_repository_impl.dart' as _i5;
-import '../../domain/usecases/get_profile_github_usecase.dart' as _i6;
-import '../remote/github_service.dart' as _i4;
-import 'modules/datasource.module.dart' as _i7;
+import '../../domain/repositories/github_repository_impl.dart' as _i7;
+import '../../domain/usecases/get_profile_github_usecase.dart' as _i3;
+import '../../domain/usecases/get_repositories_of_google_usecase.dart' as _i4;
+import '../remote/github_service.dart' as _i6;
+import 'modules/datasource.module.dart' as _i8;
 
 const String _dev = 'dev';
 
@@ -31,16 +32,17 @@ _i1.GetIt init(
     environmentFilter,
   );
   final dataSourceModule = _$DataSourceModule();
-  gh.singleton<_i3.Dio>(
+  gh.factory<_i3.GetProfileGithubUseCase>(() => _i3.GetProfileGithubUseCase());
+  gh.factory<_i4.GetRepositoriesOfGoogleUseCase>(
+      () => _i4.GetRepositoriesOfGoogleUseCase());
+  gh.singleton<_i5.Dio>(
     () => dataSourceModule.dioProd(),
     registerFor: {_dev},
   );
-  gh.factory<_i4.GithubService>(() => _i4.GithubService(gh<_i3.Dio>()));
-  gh.factory<_i5.GithubRepository>(
-      () => _i5.GithubRepositoryImpl(gh<_i4.GithubService>()));
-  gh.factory<_i6.GetProfileGithubUseCase>(
-      () => _i6.GetProfileGithubUseCase(gh<_i5.GithubRepository>()));
+  gh.factory<_i6.GithubService>(() => _i6.GithubService(gh<_i5.Dio>()));
+  gh.factory<_i7.GithubRepository>(
+      () => _i7.GithubRepositoryImpl(gh<_i6.GithubService>()));
   return getIt;
 }
 
-class _$DataSourceModule extends _i7.DataSourceModule {}
+class _$DataSourceModule extends _i8.DataSourceModule {}

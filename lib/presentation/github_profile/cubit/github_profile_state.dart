@@ -1,10 +1,31 @@
 part of 'github_profile_cubit.dart';
 
-@immutable
-sealed class GithubProfileState {}
+sealed class GithubState {}
 
-final class GithubProfileInitial extends GithubProfileState {}
+class GithubProfileInitial extends GithubState {}
 
-final class GithubProfileLoading extends GithubProfileState {}
+class GithubProfileLoading extends GithubState {}
 
-final class GithubProfileLoaded extends GithubProfileState {}
+class GithubProfileLoaded extends GithubState {
+  final GetGithubProfileResponse profile;
+  GithubProfileLoaded(this.profile);
+}
+
+class GithubProfileError extends GithubState {
+  final String message;
+  GithubProfileError(this.message);
+}
+
+class GithubRepositoriesInitial extends GithubState {}
+
+class GithubRepositoriesLoaded extends GithubState {
+  List<GetRepositoriesOfGoogleResponse> listRepositories = [];
+  GithubRepositoriesLoaded(this.listRepositories);
+}
+
+class GithubRepositoriesError extends GithubState {
+  final String message;
+  GithubRepositoriesError(this.message);
+}
+
+class GithubRepositoriesLoadMore extends GithubState {}

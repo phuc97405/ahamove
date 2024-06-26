@@ -18,8 +18,10 @@ abstract class BaseRepository {
       var response = await call;
       // print(inspect(response));
       // if (response.isSuccess()) {
-      await saveResult?.call(response);
-      return Success(response);
+      if (response != null) {
+        await saveResult?.call(response);
+        return Success(response);
+      }
       // } else if (response.isFirstLoginSNS()) {
       // logger.d('isFirstLoginSNS');
       // return Error(
@@ -27,9 +29,9 @@ abstract class BaseRepository {
       // } else if (response.isTokenExpired()) {
       // return Error(
       // ErrorType.TOKEN_EXPIRED, response.message ?? "Unknown Error");
-      // } else {
-      // return Error(ErrorType.GENERIC, response.message ?? "Unknown Error");
-      // }
+      else {
+        return Error(ErrorType.GENERIC, "Unknown Error");
+      }
     } on Exception catch (exception) {
       if (kDebugMode) {
         print("Api error message -> ${exception.toString()}");
