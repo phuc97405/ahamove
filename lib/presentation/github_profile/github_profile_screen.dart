@@ -1,4 +1,6 @@
+import 'package:ahamove/components/error_dialog.dart';
 import 'package:ahamove/core/base/functions/base_functions.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ahamove/presentation/github_profile/cubit/github_profile_cubit.dart';
@@ -17,9 +19,12 @@ class _GithubProfileScreenState extends State<GithubProfileScreen> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      context.read<GithubCubit>().fetchDataInitial();
       // context.read<GithubCubit>().getGithubProfile();
-      context.read<GithubCubit>().getGithubRepositories();
+      // context.read<GithubCubit>().getGithubRepositories();
     });
+    controller.addListener(listenScrollToTop);
+
     super.initState();
   }
 
@@ -35,6 +40,21 @@ class _GithubProfileScreenState extends State<GithubProfileScreen> {
   }
 
   @override
+  void dispose() {
+    controller.removeListener(listenScrollToTop);
+    super.dispose();
+  }
+
+  void listenScrollToTop() {
+    if (controller.position.maxScrollExtent == controller.position.pixels) {
+      final state = context.read<GithubCubit>().state;
+      if (state.status == GithubStatus.success) {
+        context.read<GithubCubit>().loadMoreListRepositories(state.pageNext);
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -44,66 +64,80 @@ class _GithubProfileScreenState extends State<GithubProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const GithubInfo(),
-            const SizedBox(height: 30),
-            const Text(
-              'Popular repositories',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
-            ),
-            const SizedBox(height: 10),
             BlocConsumer<GithubCubit, GithubState>(
+              listenWhen: (previous, current) => true,
               listener: (BuildContext context, GithubState state) {
-                switch (state) {
-                  case GithubRepositoriesInitial _:
-                    showDialogView(
-                        context: context,
-                        content: Row(
-                          children: [
-                            const CircularProgressIndicator(
-                              color: Colors.green,
-                            ),
-                            Container(
-                                margin: const EdgeInsets.only(left: 7),
-                                child: const Text("Loading...")),
-                          ],
-                        ));
+                switch (state.status) {
+                  case GithubStatus.initial:
+                    // showDialogView(
+                    //     context: context,
+                    //     content: Row(
+                    //       children: [
+                    //         const CircularProgressIndicator(
+                    //           color: Colors.green,
+                    //         ),
+                    //         Container(
+                    //             margin: const EdgeInsets.only(left: 7),
+                    //             child: const Text("Loading...")),
+                    //       ],
+                    //     ));
                     break;
-                  case GithubRepositoriesLoaded _:
-                    Navigator.of(context).pop();
+                  case GithubStatus.success:
+                    // Navigator.of(context).pop();
                     break;
-                  case GithubRepositoriesError _:
-                    showDialogView(
-                      context: context,
-                      content: Container(
-                          margin: const EdgeInsets.only(left: 7),
-                          child: Text(state.message)),
-                    );
+                  case GithubStatus.error:
+                    // showDialog(
+                    //     barrierDismissible: false,
+                    //     context: context,
+                    //     builder: (BuildContext context) => ErrorAlertDialog(
+                    //           context: context,
+                    //           label: state.listError.join('\n'),
+                    //         )).then((value) {
+                    //   if (value != null && value) {
+                    //     // Navigator.pop(context);
+                    //   }
+                    // });
                     break;
                   default:
                 }
               },
               buildWhen: (previous, current) =>
-                  current is GithubRepositoriesLoaded,
+                  current.status == GithubStatus.success,
               builder: (context, state) {
                 return Expanded(
-                  child: state is GithubRepositoriesLoaded
-                      ? ListView.builder(
-                          itemCount: state.listRepositories.length,
+                  child: state.status == GithubStatus.success ||
+                          state.status == GithubStatus.loadMore
+                      ? SingleChildScrollView(
                           controller: controller,
-                          padding: const EdgeInsets.all(0),
-                          itemBuilder: (context, index) {
-                            final repo = state.listRepositories[index];
-                            print('stargazersCount ${repo.stargazers_count}');
-                            return RepositoryCard(
-                              key: ValueKey(repo.id),
-                              name: repo.name ?? '',
-                              description: repo.description ?? '',
-                              language: repo.language ?? '',
-                              stars: BaseFunctions.instance
-                                  .formatNumberToK(repo.stargazers_count ?? 0),
-                              forks: BaseFunctions.instance
-                                  .formatNumberToK(repo.forks_count ?? 0),
-                            );
-                          })
+                          physics: const ScrollPhysics(),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: state.listRepositories.length,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  // controller: controller,
+                                  padding: const EdgeInsets.all(0),
+                                  itemBuilder: (context, index) {
+                                    final repo = state.listRepositories[index];
+                                    // print('stargazersCount ${repo.stargazers_count}');
+                                    return RepositoryCard(
+                                      key: ValueKey(repo.id),
+                                      name: repo.name ?? '',
+                                      description: repo.description ?? '',
+                                      language: repo.language ?? '',
+                                      stars: BaseFunctions.instance
+                                          .formatNumberToK(
+                                              repo.stargazers_count ?? 0),
+                                      forks: BaseFunctions.instance
+                                          .formatNumberToK(
+                                              repo.forks_count ?? 0),
+                                    );
+                                  }),
+                              const CupertinoActivityIndicator()
+                            ],
+                          ))
                       : Container(),
                 );
               },
@@ -134,7 +168,7 @@ class RepositoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
           border: Border.all(width: 0.5, color: Colors.grey),
           borderRadius: BorderRadius.circular(8)),
@@ -149,7 +183,7 @@ class RepositoryCard extends StatelessWidget {
                 name,
                 style: TextStyle(
                     color: Colors.blue[800],
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold),
               ),
               Container(
@@ -157,26 +191,41 @@ class RepositoryCard extends StatelessWidget {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(width: 0.5, color: Colors.grey)),
-                child: const Text('Public'),
+                child: const Text(
+                  'Public',
+                  style: TextStyle(fontSize: 12),
+                ),
               )
             ],
           ),
           const SizedBox(height: 8),
-          Text(description),
+          Text(
+            description,
+            style: const TextStyle(fontSize: 14),
+          ),
           const SizedBox(height: 15),
           Row(
             children: [
               const Icon(Icons.do_disturb_on_rounded, size: 16),
               const SizedBox(width: 4),
-              Text(language),
+              Text(
+                language,
+                style: const TextStyle(fontSize: 12),
+              ),
               const SizedBox(width: 16),
               const Icon(Icons.star_border, size: 16),
               const SizedBox(width: 4),
-              Text(stars),
+              Text(
+                stars,
+                style: const TextStyle(fontSize: 12),
+              ),
               const SizedBox(width: 16),
               const Icon(Icons.call_split, size: 16),
               const SizedBox(width: 4),
-              Text(forks),
+              Text(
+                forks,
+                style: const TextStyle(fontSize: 12),
+              ),
             ],
           ),
         ],

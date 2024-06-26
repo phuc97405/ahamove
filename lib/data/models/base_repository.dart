@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:ahamove/core/common/error_type.dart';
 import 'package:ahamove/core/common/result.dart';
-import 'package:ahamove/core/networking/model_base_response.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
@@ -16,7 +15,7 @@ abstract class BaseRepository {
   }) async {
     try {
       var response = await call;
-      // print(inspect(response));
+      print('response ${inspect(response)}');
       // if (response.isSuccess()) {
       if (response != null) {
         await saveResult?.call(response);

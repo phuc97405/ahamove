@@ -1,31 +1,44 @@
 part of 'github_profile_cubit.dart';
 
-sealed class GithubState {}
-
-class GithubProfileInitial extends GithubState {}
-
-class GithubProfileLoading extends GithubState {}
-
-class GithubProfileLoaded extends GithubState {
-  final GetGithubProfileResponse profile;
-  GithubProfileLoaded(this.profile);
+enum GithubStatus {
+  initial,
+  loading,
+  success,
+  loadMore,
+  error,
 }
 
-class GithubProfileError extends GithubState {
-  final String message;
-  GithubProfileError(this.message);
+class GithubState extends Equatable {
+  final GithubStatus status;
+  final GetGithubProfileResponse? profile;
+  final List<GetRepositoriesOfGoogleResponse> listRepositories;
+  final List<String> listError;
+  final int pageNext;
+  const GithubState(
+      {required this.status,
+      this.profile,
+      this.listRepositories = const [],
+      this.listError = const [],
+      this.pageNext = 1});
+
+  const GithubState.initial() : this(status: GithubStatus.initial, pageNext: 1);
+
+  const GithubState.loading() : this(status: GithubStatus.loading, pageNext: 1);
+
+  GithubState copyWith(
+      {GithubStatus? status,
+      GetGithubProfileResponse? profile,
+      List<GetRepositoriesOfGoogleResponse>? listRepositories,
+      List<String>? listError,
+      int? pageNext}) {
+    return GithubState(
+        status: status ?? this.status,
+        profile: profile ?? this.profile,
+        listRepositories: listRepositories ?? this.listRepositories,
+        listError: listError ?? this.listError,
+        pageNext: pageNext ?? this.pageNext);
+  }
+
+  @override
+  List<Object?> get props => [status, profile, listRepositories, listError];
 }
-
-class GithubRepositoriesInitial extends GithubState {}
-
-class GithubRepositoriesLoaded extends GithubState {
-  List<GetRepositoriesOfGoogleResponse> listRepositories = [];
-  GithubRepositoriesLoaded(this.listRepositories);
-}
-
-class GithubRepositoriesError extends GithubState {
-  final String message;
-  GithubRepositoriesError(this.message);
-}
-
-class GithubRepositoriesLoadMore extends GithubState {}

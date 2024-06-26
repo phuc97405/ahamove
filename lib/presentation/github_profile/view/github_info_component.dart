@@ -1,3 +1,4 @@
+import 'package:ahamove/components/error_dialog.dart';
 import 'package:ahamove/core/base/functions/base_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,8 +15,9 @@ class _GithubInfoState extends State<GithubInfo> {
   static String avatarUrlDefault =
       'https://avatars.githubusercontent.com/u/1342004?v=4';
 
-  Widget loadDataProfileSuccess(GithubProfileLoaded state) {
+  Widget loadDataProfileSuccess(GithubState state) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,19 +29,19 @@ class _GithubInfoState extends State<GithubInfo> {
                 child: Image.network(
                     width: 100,
                     height: 100,
-                    state.profile.avatarUrl ?? avatarUrlDefault)),
+                    state.profile?.avatarUrl ?? avatarUrlDefault)),
             const SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  state.profile.name ?? '',
+                  state.profile?.name ?? '',
                   style: const TextStyle(
                       fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  state.profile.description ?? '',
+                  state.profile?.description ?? '',
                   style: const TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 8),
@@ -50,7 +52,7 @@ class _GithubInfoState extends State<GithubInfo> {
                     RichText(
                       text: TextSpan(
                           text: BaseFunctions.instance
-                              .formatNumberToK(state.profile.followers ?? 0),
+                              .formatNumberToK(state.profile?.followers ?? 0),
                           style: const TextStyle(
                               fontWeight: FontWeight.bold, color: Colors.black),
                           children: const <TextSpan>[
@@ -76,7 +78,7 @@ class _GithubInfoState extends State<GithubInfo> {
                     children: [
                       const Icon(Icons.location_on, size: 16),
                       const SizedBox(width: 4),
-                      Text(state.profile.location ?? ''),
+                      Text(state.profile?.location ?? ''),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -84,13 +86,18 @@ class _GithubInfoState extends State<GithubInfo> {
                     const Icon(Icons.link, size: 16),
                     const SizedBox(width: 4),
                     Text(
-                      state.profile.blog ?? '',
+                      state.profile?.blog ?? '',
                     )
                   ]),
                 ],
               ),
             ),
           ],
+        ),
+        const SizedBox(height: 20),
+        const Text(
+          'Popular repositories',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
         ),
       ],
     );
@@ -99,11 +106,12 @@ class _GithubInfoState extends State<GithubInfo> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<GithubCubit, GithubState>(
-        listenWhen: (previous, current) => true,
+        listenWhen: (previous, current) =>
+            previous.status != GithubStatus.loadMore,
         listener: (BuildContext context, GithubState state) {
-          switch (state) {
-            case GithubProfileLoading _:
-            case GithubProfileInitial _:
+          switch (state.status) {
+            case GithubStatus.loading:
+            case GithubStatus.initial:
               BaseFunctions.instance.showDialogView(
                   context: context,
                   content: Row(
@@ -117,24 +125,30 @@ class _GithubInfoState extends State<GithubInfo> {
                     ],
                   ));
               break;
-            case GithubProfileLoaded _:
+            case GithubStatus.success:
               Navigator.of(context).pop();
               break;
-            case GithubProfileError _:
-              BaseFunctions.instance.showDialogView(
-                context: context,
-                content: Container(
-                    margin: const EdgeInsets.only(left: 7),
-                    child: Text(state.message)),
-              );
+            case GithubStatus.error:
+              showDialog(
+                  barrierDismissible: false,
+                  context: context,
+                  builder: (BuildContext context) => ErrorAlertDialog(
+                        context: context,
+                        label: state.listError.join('\n'),
+                      )).then((value) {
+                if (value != null && value) {
+                  Navigator.pop(context);
+                }
+              });
               break;
             default:
-            // Navigator.of(context).pop();
           }
         },
-        buildWhen: (previous, current) => current is GithubProfileLoaded,
+        buildWhen: (previous, current) =>
+            previous.status != GithubStatus.loadMore &&
+            current.status == GithubStatus.success,
         builder: (BuildContext context, GithubState state) {
-          return state is GithubProfileLoaded
+          return state.status == GithubStatus.success
               ? loadDataProfileSuccess(state)
               : Container();
         });
