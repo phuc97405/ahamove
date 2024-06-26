@@ -1,8 +1,7 @@
-import 'package:ahamove/core/networking/model_base_response.dart' as MT;
 import 'error_type.dart';
 
 class Result<T> with SealedResult<T> {
-  bool get isSuccessful => this is Success<T>;
+  // bool get isSuccessful => this is Success<T>;
 }
 
 // class ResultLoadMore<T> with SealedResultLoadMore<T> {
@@ -11,8 +10,7 @@ class Result<T> with SealedResult<T> {
 
 class Success<T> extends Result<T> {
   T? data;
-  MT.Meta? meta;
-  Success(this.data, this.meta);
+  Success(this.data);
 }
 
 // class SuccessLoadMore<T> extends ResultLoadMore<T> {
@@ -35,12 +33,11 @@ class Error<T> extends Result<T> {
   */
 mixin class SealedResult<T> {
   R? when<R>({
-    R Function(T?, MT.Meta?)? success,
+    R Function(T?)? success,
     R Function(ErrorType, String)? error,
   }) {
     if (this is Success<T?>) {
-      return success?.call(
-          (this as Success<T>).data, (this as Success<T>).meta);
+      return success?.call((this as Success<T>).data);
     }
     if (this is Error<T>) {
       return error?.call((this as Error<T>).type, (this as Error<T>).message);

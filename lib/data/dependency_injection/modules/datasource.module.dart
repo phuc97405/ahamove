@@ -68,9 +68,9 @@ class ApiTokenInterceptor extends InterceptorsWrapper {
   @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
-    if (options.path.contains('user/getToken')) {
-      return handler.next(options);
-    }
+    // if (options.path.contains('user/getToken')) {
+    //   return handler.next(options);
+    // }
 
     // final token = await authCacheManager.getToken();
     // options.headers = {
@@ -95,37 +95,37 @@ class ApiTokenInterceptor extends InterceptorsWrapper {
     return handler.next(err);
   }
 
-  FutureOr refreshToken(
-      DioException err, ErrorInterceptorHandler handler) async {
-    try {
-      // final refreshToken = await authCacheManager.getToken(true);
-      Dio retryDio = Dio(
-        BaseOptions(
-          baseUrl: Configurations.baseUrl,
-          headers: <String, String>{
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $refreshToken'
-          },
-        ),
-      );
-      debugPrint('--[REFRESH TOKEN]--: $refreshToken');
-      var response = await retryDio.get('user/getToken');
-      var data = response.data;
-      if (response.statusCode == 401 || response.statusCode == 403) {
-        if (kDebugMode) {
-          print("LOGGING OUT: EXPIRED REFRESH TOKEN");
-        }
-        return handler.reject(err);
-      }
-      // await authCacheManager.updateTokenAndUserId(
-      //     TokenEntities(
-      //         accessToken: data.user?.accessToken,
-      //         refreshToken: data.user?.refreshToken),
-      //     null);
-      return handler.next(err);
-    } catch (exception) {
-      // authCacheManager.signOut();
-    }
-    return null;
-  }
+  // FutureOr refreshToken(
+  //     DioException err, ErrorInterceptorHandler handler) async {
+  //   try {
+  //     // final refreshToken = await authCacheManager.getToken(true);
+  //     Dio retryDio = Dio(
+  //       BaseOptions(
+  //         baseUrl: Configurations.baseUrl,
+  //         headers: <String, String>{
+  //           'Content-Type': 'application/json',
+  //           'Authorization': 'Bearer $refreshToken'
+  //         },
+  //       ),
+  //     );
+  //     debugPrint('--[REFRESH TOKEN]--: $refreshToken');
+  //     var response = await retryDio.get('user/getToken');
+  //     var data = response.data;
+  //     if (response.statusCode == 401 || response.statusCode == 403) {
+  //       if (kDebugMode) {
+  //         print("LOGGING OUT: EXPIRED REFRESH TOKEN");
+  //       }
+  //       return handler.reject(err);
+  //     }
+  //     // await authCacheManager.updateTokenAndUserId(
+  //     //     TokenEntities(
+  //     //         accessToken: data.user?.accessToken,
+  //     //         refreshToken: data.user?.refreshToken),
+  //     //     null);
+  //     return handler.next(err);
+  //   } catch (exception) {
+  //     // authCacheManager.signOut();
+  //   }
+  //   return null;
+  // }
 }

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:ahamove/core/injection/injector_container.dart';
 import 'package:ahamove/domain/usecases/get_profile_github_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,12 +13,13 @@ class GithubProfileCubit extends Cubit<GithubProfileState> {
 
   void getGithubProfile() async {
     try {
-      emit(GithubProfileLoading());
-      (await _getGithubProfileUseCase.call())
-          .when(success: (profile, _) => {print('data profile: $profile')});
+      // emit(GithubProfileLoading());
+      (await _getGithubProfileUseCase.call()).when(
+          success: (profile) => {print('data profile: ${inspect(profile)}')},
+          error: (type, msg) => print('error msg: $msg'));
       // emit(GithubProfileLoaded(profile));
     } catch (e) {
-      print(e);
+      print('error $e');
     }
   }
 }

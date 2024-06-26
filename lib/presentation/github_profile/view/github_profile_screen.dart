@@ -94,14 +94,14 @@ class GithubInfo extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey, width: 0.5)),
-                child: Image.network(
-                    width: 100,
-                    height: 100,
-                    'https://avatars.githubusercontent.com/u/1342004?v=4')),
+            // Container(
+            //     decoration: BoxDecoration(
+            //         borderRadius: BorderRadius.circular(8),
+            //         border: Border.all(color: Colors.grey, width: 0.5)),
+            //     child: Image.network(
+            //         width: 100,
+            //         height: 100,
+            //         'https://avatars.githubusercontent.com/u/1342004?v=4')),
             const SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,

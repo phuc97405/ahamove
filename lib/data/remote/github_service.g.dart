@@ -19,13 +19,13 @@ class _GithubService implements GithubService {
   String? baseUrl;
 
   @override
-  Future<ModelBaseResponse<GetGithubProfileResponse>> getGithubProfile() async {
+  Future<GetGithubProfileResponse> getGithubProfile() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
     final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<ModelBaseResponse<GetGithubProfileResponse>>(Options(
+        _setStreamType<GetGithubProfileResponse>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -41,10 +41,7 @@ class _GithubService implements GithubService {
               _dio.options.baseUrl,
               baseUrl,
             ))));
-    final value = ModelBaseResponse<GetGithubProfileResponse>.fromJson(
-      _result.data!,
-      (json) => GetGithubProfileResponse.fromJson(json as Map<String, dynamic>),
-    );
+    final value = GetGithubProfileResponse.fromJson(_result.data!);
     return value;
   }
 

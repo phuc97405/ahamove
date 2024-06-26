@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:ahamove/core/common/error_type.dart';
 import 'package:ahamove/core/common/result.dart';
 import 'package:ahamove/core/networking/model_base_response.dart';
@@ -5,28 +7,29 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 typedef EntityToModelMapper<Entity, Data> = Data? Function(Entity? entity);
-typedef SaveResult<Data> = Future Function(Data? data, [Meta? meta]);
+typedef SaveResult<Data> = Future Function(Data? data);
 
 abstract class BaseRepository {
   Future<Result<Data>> baseApiRepository<Data>(
-    Future<ModelBaseResponse<Data>> call, {
+    Future<Data> call, {
     SaveResult<Data?>? saveResult,
   }) async {
     try {
       var response = await call;
-      if (response.isSuccess()) {
-        await saveResult?.call(response.data, response.meta);
-        return Success(response.data, response.meta);
-      } else if (response.isFirstLoginSNS()) {
-        // logger.d('isFirstLoginSNS');
-        return Error(
-            ErrorType.FIRST_LOGIN_SNS, response.message ?? "Unknown Error");
-      } else if (response.isTokenExpired()) {
-        return Error(
-            ErrorType.TOKEN_EXPIRED, response.message ?? "Unknown Error");
-      } else {
-        return Error(ErrorType.GENERIC, response.message ?? "Unknown Error");
-      }
+      // print(inspect(response));
+      // if (response.isSuccess()) {
+      await saveResult?.call(response);
+      return Success(response);
+      // } else if (response.isFirstLoginSNS()) {
+      // logger.d('isFirstLoginSNS');
+      // return Error(
+      // ErrorType.FIRST_LOGIN_SNS, response.message ?? "Unknown Error");
+      // } else if (response.isTokenExpired()) {
+      // return Error(
+      // ErrorType.TOKEN_EXPIRED, response.message ?? "Unknown Error");
+      // } else {
+      // return Error(ErrorType.GENERIC, response.message ?? "Unknown Error");
+      // }
     } on Exception catch (exception) {
       if (kDebugMode) {
         print("Api error message -> ${exception.toString()}");

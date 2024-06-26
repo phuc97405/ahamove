@@ -11,12 +11,11 @@ const int socialNotExist = 402;
 
 @JsonSerializable(explicitToJson: true, genericArgumentFactories: true)
 class ModelBaseResponse<T> {
-  final int status;
+  final int? status;
   final String? message;
   final T? data;
-  final Meta? meta;
 
-  ModelBaseResponse(this.status, this.message, this.data, this.meta);
+  ModelBaseResponse(this.status, this.message, this.data);
 
   bool isSuccess() => successStatus == status;
 
@@ -34,18 +33,4 @@ class ModelBaseResponse<T> {
 
   Map<String, dynamic> toJson(Object Function(T) toJsonT) =>
       _$ModelBaseResponseToJson<T>(this, toJsonT);
-}
-
-@JsonSerializable()
-class Meta {
-  int? total;
-  int? totalPage;
-  String? search;
-  int? page;
-  int? limit;
-
-  Meta({this.total, this.totalPage, this.search, this.page, this.limit});
-
-  factory Meta.fromJson(Map<String, dynamic> json) => _$MetaFromJson(json);
-  Map<String, dynamic> toJson() => _$MetaToJson(this);
 }

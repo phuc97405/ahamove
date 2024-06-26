@@ -1,38 +1,39 @@
 import 'package:json_annotation/json_annotation.dart';
+
 part 'get_github_profile_response.g.dart';
 
 @JsonSerializable()
 class GetGithubProfileResponse {
-  String login;
-  int id;
-  String nodeId;
-  String url;
-  String reposUrl;
-  String eventsUrl;
-  String hooksUrl;
-  String issuesUrl;
-  String membersUrl;
-  String publicMembersUrl;
-  String avatarUrl;
-  String description;
-  String name;
+  String? login;
+  int? id;
+  String? nodeId;
+  String? url;
+  String? reposUrl;
+  String? eventsUrl;
+  String? hooksUrl;
+  String? issuesUrl;
+  String? membersUrl;
+  String? publicMembersUrl;
+  String? avatarUrl;
+  String? description;
+  String? name;
   dynamic company;
-  String blog;
-  String location;
-  String email;
-  String twitterUsername;
-  bool isVerified;
-  bool hasOrganizationProjects;
-  bool hasRepositoryProjects;
-  int publicRepos;
-  int publicGists;
-  int followers;
-  int following;
-  String htmlUrl;
-  String createdAt;
-  String updatedAt;
+  String? blog;
+  String? location;
+  String? email;
+  String? twitterUsername;
+  bool? isVerified;
+  bool? hasOrganizationProjects;
+  bool? hasRepositoryProjects;
+  int? publicRepos;
+  int? publicGists;
+  int? followers;
+  int? following;
+  String? htmlUrl;
+  String? createdAt;
+  String? updatedAt;
   dynamic archivedAt;
-  String type;
+  String? type;
 
   GetGithubProfileResponse({
     required this.login,
@@ -68,6 +69,5 @@ class GetGithubProfileResponse {
   });
   factory GetGithubProfileResponse.fromJson(Map<String, dynamic> json) =>
       _$GetGithubProfileResponseFromJson(json);
-
   Map<String, dynamic> toJson() => _$GetGithubProfileResponseToJson(this);
 }
