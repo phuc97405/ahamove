@@ -1,8 +1,8 @@
-import 'package:ahamove/data/models/response/get_github_profile_response.dart';
-import 'package:ahamove/data/models/response/get_repositories_of_google_response.dart';
 import 'package:dio/dio.dart';
 import 'package:retrofit/http.dart';
 import 'package:injectable/injectable.dart';
+import 'package:ahamove/data/models/response/get_github_profile_response.dart';
+import 'package:ahamove/data/models/response/get_repositories_of_google_response.dart';
 
 part 'github_service.g.dart';
 

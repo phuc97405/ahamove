@@ -21,8 +21,10 @@ void main() async {
   HttpOverrides.global = MyHttpOverrides();
   runApp(BlocProvider<GithubCubit>(
       create: (context) => GithubCubit(),
-      child:
-          MaterialApp(theme: appThemeData, home: const GithubProfileScreen())));
+      child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: appThemeData,
+          home: const GithubProfileScreen())));
 }
 
 class MyHttpOverrides extends HttpOverrides {

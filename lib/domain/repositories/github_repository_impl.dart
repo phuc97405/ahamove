@@ -13,8 +13,6 @@ abstract class GithubRepository {
 
 @Injectable(as: GithubRepository)
 class GithubRepositoryImpl extends BaseRepository implements GithubRepository {
-  // final GithubService _githubService = injector<GithubService>();
-
   final GithubService _githubService;
 
   GithubRepositoryImpl(this._githubService);

@@ -11,4 +11,6 @@ class StringConstants {
 
   //for home screen
   static const String followers = 'followers';
+
+  static const String popularRepositories = 'Popular repositories';
 }

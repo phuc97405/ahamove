@@ -1,13 +1,5 @@
 part of 'github_profile_cubit.dart';
 
-enum GithubStatus {
-  initial,
-  loading,
-  success,
-  loadMore,
-  error,
-}
-
 class GithubState extends Equatable {
   final GithubStatus status;
   final GetGithubProfileResponse? profile;

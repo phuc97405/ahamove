@@ -41,3 +41,5 @@ final ThemeData appThemeData = ThemeData(
 );
 
 const double kHorizontalContentPadding = 20.0;
+const String avatarUrlDefault =
+    'https://avatars.githubusercontent.com/u/1342004?v=4';

@@ -1,6 +1,5 @@
-import 'dart:developer';
-
 import 'package:ahamove/core/common/result.dart';
+import 'package:ahamove/core/constants/enums/git_enums.dart';
 import 'package:ahamove/core/injection/injector_container.dart';
 import 'package:ahamove/data/models/response/get_github_profile_response.dart';
 import 'package:ahamove/data/models/response/get_repositories_of_google_response.dart';
@@ -57,7 +56,6 @@ class GithubCubit extends Cubit<GithubState> {
           error: (type, msg) => emit(
               state.copyWith(status: GithubStatus.error, listError: [msg])));
     } catch (e) {
-      print(e.toString());
       emit(state
           .copyWith(status: GithubStatus.error, listError: [e.toString()]));
     }

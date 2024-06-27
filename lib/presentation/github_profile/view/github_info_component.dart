@@ -1,5 +1,10 @@
 import 'package:ahamove/components/error_dialog.dart';
 import 'package:ahamove/core/base/functions/base_functions.dart';
+import 'package:ahamove/core/constants/enums/git_enums.dart';
+import 'package:ahamove/core/extensions/context_extensions.dart';
+import 'package:ahamove/core/extensions/num_extensions.dart';
+import 'package:ahamove/core/extensions/text_extensions.dart';
+import 'package:ahamove/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ahamove/core/constants/app/string_constants.dart';
@@ -12,9 +17,6 @@ class GithubInfo extends StatefulWidget {
 }
 
 class _GithubInfoState extends State<GithubInfo> {
-  static String avatarUrlDefault =
-      'https://avatars.githubusercontent.com/u/1342004?v=4';
-
   Widget loadDataProfileSuccess(GithubState state) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,25 +32,22 @@ class _GithubInfoState extends State<GithubInfo> {
                     width: 100,
                     height: 100,
                     state.profile?.avatarUrl ?? avatarUrlDefault)),
-            const SizedBox(width: 16),
+            16.pw,
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   state.profile?.name ?? '',
-                  style: const TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold),
+                  style: context.textTheme.display_xsB,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  state.profile?.description ?? '',
-                  style: const TextStyle(fontSize: 16),
-                ),
-                const SizedBox(height: 8),
+                8.ph,
+                Text(state.profile?.description ?? '',
+                    style: context.textTheme.text_mdB),
+                8.ph,
                 Row(
                   children: [
                     const Icon(Icons.people, size: 16),
-                    const SizedBox(width: 4),
+                    4.pw,
                     RichText(
                       text: TextSpan(
                           text: BaseFunctions.instance
@@ -70,21 +69,21 @@ class _GithubInfoState extends State<GithubInfo> {
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const SizedBox(width: 116),
+            116.pw,
             Expanded(
               child: Column(
                 children: [
                   Row(
                     children: [
                       const Icon(Icons.location_on, size: 16),
-                      const SizedBox(width: 4),
+                      4.pw,
                       Text(state.profile?.location ?? ''),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  8.ph,
                   Row(children: [
                     const Icon(Icons.link, size: 16),
-                    const SizedBox(width: 4),
+                    4.pw,
                     Text(
                       state.profile?.blog ?? '',
                     )
@@ -94,11 +93,12 @@ class _GithubInfoState extends State<GithubInfo> {
             ),
           ],
         ),
-        const SizedBox(height: 20),
-        const Text(
-          'Popular repositories',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400),
+        20.ph,
+        Text(
+          StringConstants.popularRepositories,
+          style: context.textTheme.text_lgR,
         ),
+        10.ph,
       ],
     );
   }

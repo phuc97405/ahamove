@@ -1,8 +1,12 @@
-import 'package:ahamove/components/error_dialog.dart';
-import 'package:ahamove/core/base/functions/base_functions.dart';
+import 'package:ahamove/core/extensions/context_extensions.dart';
+import 'package:ahamove/core/extensions/num_extensions.dart';
+import 'package:ahamove/core/extensions/text_extensions.dart';
+import 'package:ahamove/theme/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ahamove/core/constants/enums/git_enums.dart';
+import 'package:ahamove/core/base/functions/base_functions.dart';
 import 'package:ahamove/presentation/github_profile/cubit/github_profile_cubit.dart';
 import 'package:ahamove/presentation/github_profile/view/github_info_component.dart';
 
@@ -20,11 +24,8 @@ class _GithubProfileScreenState extends State<GithubProfileScreen> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       context.read<GithubCubit>().fetchDataInitial();
-      // context.read<GithubCubit>().getGithubProfile();
-      // context.read<GithubCubit>().getGithubRepositories();
     });
     controller.addListener(listenScrollToTop);
-
     super.initState();
   }
 
@@ -39,12 +40,6 @@ class _GithubProfileScreenState extends State<GithubProfileScreen> {
     );
   }
 
-  @override
-  void dispose() {
-    controller.removeListener(listenScrollToTop);
-    super.dispose();
-  }
-
   void listenScrollToTop() {
     if (controller.position.maxScrollExtent == controller.position.pixels) {
       final state = context.read<GithubCubit>().state;
@@ -55,52 +50,23 @@ class _GithubProfileScreenState extends State<GithubProfileScreen> {
   }
 
   @override
+  void dispose() {
+    controller.removeListener(listenScrollToTop);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(20, kToolbarHeight, 20, 10),
+        padding: const EdgeInsets.fromLTRB(kHorizontalContentPadding,
+            kToolbarHeight, kHorizontalContentPadding, 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const GithubInfo(),
-            BlocConsumer<GithubCubit, GithubState>(
-              listenWhen: (previous, current) => true,
-              listener: (BuildContext context, GithubState state) {
-                switch (state.status) {
-                  case GithubStatus.initial:
-                    // showDialogView(
-                    //     context: context,
-                    //     content: Row(
-                    //       children: [
-                    //         const CircularProgressIndicator(
-                    //           color: Colors.green,
-                    //         ),
-                    //         Container(
-                    //             margin: const EdgeInsets.only(left: 7),
-                    //             child: const Text("Loading...")),
-                    //       ],
-                    //     ));
-                    break;
-                  case GithubStatus.success:
-                    // Navigator.of(context).pop();
-                    break;
-                  case GithubStatus.error:
-                    // showDialog(
-                    //     barrierDismissible: false,
-                    //     context: context,
-                    //     builder: (BuildContext context) => ErrorAlertDialog(
-                    //           context: context,
-                    //           label: state.listError.join('\n'),
-                    //         )).then((value) {
-                    //   if (value != null && value) {
-                    //     // Navigator.pop(context);
-                    //   }
-                    // });
-                    break;
-                  default:
-                }
-              },
+            BlocBuilder<GithubCubit, GithubState>(
               buildWhen: (previous, current) =>
                   current.status == GithubStatus.success,
               builder: (context, state) {
@@ -117,11 +83,9 @@ class _GithubProfileScreenState extends State<GithubProfileScreen> {
                                   shrinkWrap: true,
                                   itemCount: state.listRepositories.length,
                                   physics: const NeverScrollableScrollPhysics(),
-                                  // controller: controller,
                                   padding: const EdgeInsets.all(0),
                                   itemBuilder: (context, index) {
                                     final repo = state.listRepositories[index];
-                                    // print('stargazersCount ${repo.stargazers_count}');
                                     return RepositoryCard(
                                       key: ValueKey(repo.id),
                                       name: repo.name ?? '',
@@ -179,53 +143,39 @@ class RepositoryCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                name,
-                style: TextStyle(
-                    color: Colors.blue[800],
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
+              Text(name,
+                  style: context.textTheme.text_mdB
+                      .copyWith(color: Colors.blue[800])),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius:
+                        BorderRadius.circular(kHorizontalContentPadding),
                     border: Border.all(width: 0.5, color: Colors.grey)),
-                child: const Text(
-                  'Public',
-                  style: TextStyle(fontSize: 12),
-                ),
+                child: Text('Public', style: context.textTheme.text_xsM),
               )
             ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            description,
-            style: const TextStyle(fontSize: 14),
-          ),
-          const SizedBox(height: 15),
+          8.ph,
+          Text(description, style: context.textTheme.text_smR),
+          15.ph,
           Row(
             children: [
-              const Icon(Icons.do_disturb_on_rounded, size: 16),
-              const SizedBox(width: 4),
-              Text(
-                language,
-                style: const TextStyle(fontSize: 12),
+              Container(
+                padding: const EdgeInsets.all(5),
+                decoration: const BoxDecoration(
+                    shape: BoxShape.circle, color: Colors.red),
               ),
-              const SizedBox(width: 16),
+              4.pw,
+              Text(language, style: context.textTheme.text_xsM),
+              16.pw,
               const Icon(Icons.star_border, size: 16),
-              const SizedBox(width: 4),
-              Text(
-                stars,
-                style: const TextStyle(fontSize: 12),
-              ),
-              const SizedBox(width: 16),
+              4.pw,
+              Text(stars, style: context.textTheme.text_xsM),
+              16.pw,
               const Icon(Icons.call_split, size: 16),
-              const SizedBox(width: 4),
-              Text(
-                forks,
-                style: const TextStyle(fontSize: 12),
-              ),
+              4.pw,
+              Text(forks, style: context.textTheme.text_xsM),
             ],
           ),
         ],
