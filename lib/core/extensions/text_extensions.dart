@@ -161,7 +161,7 @@ extension CustomStyles on TextTheme {
       fontSize: 14.0,
       color: Colors.black,
       fontWeight: FontWeight.w400,
-      height: 1);
+      height: 1.5);
 
   TextStyle get text_xsB => const TextStyle(
       fontSize: 12.0,
@@ -177,5 +177,5 @@ extension CustomStyles on TextTheme {
       fontSize: 12.0,
       color: Colors.black,
       fontWeight: FontWeight.w400,
-      height: 1);
+      height: 1.2);
 }
