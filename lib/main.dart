@@ -4,6 +4,7 @@ import 'package:ahamove/app_distribution/environment/env_dev.dart';
 import 'package:ahamove/app_distribution/environment/env_prod.dart';
 import 'package:ahamove/configurations/configurations.dart';
 import 'package:ahamove/data/dependency_injection/di.dart';
+import 'package:ahamove/presentation/chat_with_gpt/chat_with_gpt_screen.dart';
 import 'package:ahamove/presentation/github_profile/cubit/github_profile_cubit.dart';
 import 'package:ahamove/theme/theme.dart';
 import 'package:flutter/foundation.dart';
@@ -19,12 +20,14 @@ void main() async {
   await configureDependencies(
       environment: kReleaseMode ? Environment.prod : Environment.dev);
   HttpOverrides.global = MyHttpOverrides();
-  runApp(BlocProvider<GithubCubit>(
-      create: (context) => GithubCubit(),
-      child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: appThemeData,
-          home: const GithubProfileScreen())));
+  runApp(const MaterialApp(home: ChatWithGptScreen())
+      // BlocProvider<GithubCubit>(
+      //   create: (context) => GithubCubit(),
+      //   child: MaterialApp(
+      //       debugShowCheckedModeBanner: false,
+      //       theme: appThemeData,
+      //       home: const GithubProfileScreen()))
+      );
 }
 
 class MyHttpOverrides extends HttpOverrides {
